@@ -1,0 +1,93 @@
+// Telegram Mini App Frontend (index.html + JS)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angela Telegram - Earn Tokens</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Angela Telegram - Earn Tokens</h1>
+    <p>Click the button below to earn tokens.</p>
+    <button id="earnButton">Earn Tokens</button>
+    <button id="referButton">Refer & Earn</button>
+    <button id="withdrawButton">Withdraw Tokens</button>
+    <button id="shareButton">Share & Earn</button>
+    <p id="balance">Your Balance: <span>Loading...</span></p>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        async function updateBalance() {
+            let userId = tg.initDataUnsafe?.user?.id;
+            let response = await fetch(`https://your-backend.com/get-balance?user_id=${userId}`);
+            let data = await response.json();
+            document.getElementById('balance').innerHTML = `Your Balance: ${data.balance} tokens`;
+        }
+
+        document.getElementById('earnButton').addEventListener('click', async () => {
+            let userId = tg.initDataUnsafe?.user?.id;
+            let response = await fetch('https://your-backend.com/earn-tokens', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+            let data = await response.json();
+            if (data.success) updateBalance();
+            else alert('Error earning tokens');
+        });
+
+        document.getElementById('referButton').addEventListener('click', async () => {
+            let userId = tg.initDataUnsafe?.user?.id;
+            let response = await fetch('https://your-backend.com/refer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+            let data = await response.json();
+            if (data.success) alert(`Share this referral link: ${data.referral_link}`);
+            else alert('Error generating referral link');
+        });
+
+        document.getElementById('withdrawButton').addEventListener('click', async () => {
+            let userId = tg.initDataUnsafe?.user?.id;
+            let response = await fetch('https://your-backend.com/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+            let data = await response.json();
+            if (data.success) {
+                alert('Withdrawal request submitted!');
+                updateBalance();
+            } else {
+                alert('Error processing withdrawal');
+            }
+        });
+
+        document.getElementById('shareButton').addEventListener('click', async () => {
+            let userId = tg.initDataUnsafe?.user?.id;
+            let response = await fetch('https://your-backend.com/share', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+            let data = await response.json();
+            if (data.success) {
+                alert('Shared successfully! You earned bonus tokens.');
+                updateBalance();
+            } else {
+                alert('Error sharing');
+            }
+        });
+
+        updateBalance();
+    </script>
+</body>
+</html>
