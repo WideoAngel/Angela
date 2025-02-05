@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to Angela Telegram - Earn Tokens</h1>
+    <h1>Welcome to Angela - Earn Tokens</h1>
     <p>Click the button below to earn tokens.</p>
     <button id="earnButton">Earn Tokens</button>
     <button id="referButton">Refer & Earn</button>
